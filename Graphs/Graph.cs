@@ -81,15 +81,17 @@ namespace Graphs
     {
          void AddEdge(Edge<T> edge);
 
-         public void RemoveEdge(Edge<T> edge);
+         void RemoveEdge(Edge<T> edge);
 
          void AddVertex(Vertex<T> vertex);
 
-         public void RemoveVertex(Vertex<T> vertex);
+         void RemoveVertex(Vertex<T> vertex);
          string printVertexes();
          Vertex<T> getVertexById(int id);
+         
+         
 
-        // public Edge<T> getEdge(Vertex<T> from, Vertex<T> to);
+      //  Edge<T> getEdge(Vertex<T> from, Vertex<T> to);
 
           
 
@@ -143,6 +145,10 @@ namespace Graphs
                     aMatrix[from, to] = 1;
                 }
                 else { aMatrix[from, to] = 1; }
+
+                //dodajemy sasiadow dla wierzcholka
+
+                edge.FromVertex.Neighbors.Add(edge.ToVertex);
                
 
 
@@ -150,8 +156,25 @@ namespace Graphs
             }
             else
             {
-                aMatrix[to, from] = 1;
-                aMatrix[from, to] = 1;
+                if (highestIndex <= Math.Max(to, from))
+                {
+                    highestIndex = Math.Max(to, from);
+
+                    aMatrix = _resizeArray(aMatrix, highestIndex + 1, highestIndex + 1);
+                    aMatrix[from, to] = 1;
+                    aMatrix[to, from] = 1;
+                }
+                else
+                { 
+                    aMatrix[from, to] = 1;
+                    aMatrix[to, from] = 1; 
+                }
+
+                //dodajemy sasiadow dla wierzcholka
+
+                edge.FromVertex.Neighbors.Add(edge.ToVertex);
+                edge.ToVertex.Neighbors.Add(edge.FromVertex);
+               
             }
 
         }
@@ -171,9 +194,38 @@ namespace Graphs
             int from = edge.FromVertex.Id;
             int to = edge.ToVertex.Id;
 
+            if (!digraf)
+            {
+                //jezeli krawedz istieje
+                if (aMatrix[from, to] == 1)
+                {
+                    aMatrix[from, to] = 0;
+                }
+                //usun sasiada wierzcholka
+                edge.FromVertex.Neighbors.Remove(edge.ToVertex);
+
+            }
+            else
+            {
+                if (aMatrix[from, to] == 1 && aMatrix[to, from] == 1)
+                {
+                    aMatrix[from, to] = 0;
+                    aMatrix[to, from] = 0;
+                }
+
+                //usun sasiadow
+                edge.FromVertex.Neighbors.Remove(edge.ToVertex);
+                edge.ToVertex.Neighbors.Remove(edge.FromVertex);
+            }
+
 
         }
 
+
+      ////  public Edge<T> getEdge(Vertex<T> from, Vertex<T> to)
+      //  { 
+      //      int fromId 
+      //  }
 
         public string printVertexes()
         {
@@ -202,9 +254,15 @@ namespace Graphs
             
 
             string grapRep = "";
+            grapRep += "\t";
+            for (int i = 0; i < aMatrix.GetLength(1); i++)
+                grapRep += "\t(" + i + ")";
+            grapRep += "\n";
 
             for (int i = 0; i < aMatrix.GetLength(1); i++)
             {
+                grapRep += "\t(" + i + ")";
+
                 for (int j = 0; j < aMatrix.GetLength(1); j++)
                 {
 
