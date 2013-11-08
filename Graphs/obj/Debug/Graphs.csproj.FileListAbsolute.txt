@@ -3,3 +3,4 @@ E:\STUDIA\Graphs\Graphs\bin\Debug\Graphs.exe
 E:\STUDIA\Graphs\Graphs\bin\Debug\Graphs.pdb
 E:\STUDIA\Graphs\Graphs\obj\Debug\Graphs.exe
 E:\STUDIA\Graphs\Graphs\obj\Debug\Graphs.pdb
+E:\STUDIA\Graphs\Graphs\obj\Debug\Graphs.csprojResolveAssemblyReference.cache

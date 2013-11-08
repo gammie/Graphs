@@ -14,24 +14,28 @@ namespace Graphs
             IGraph<int> myGraf;
 
             myGraf = new MatrixGraph<int>(true);
-
+            //myGraf = new ListGraph<int>(false);
             myGraf.AddVertex(new Vertex<int>(0, 3));
             myGraf.AddVertex(new Vertex<int>(1, 2));
             myGraf.AddVertex(new Vertex<int>(2, 3));
             myGraf.AddVertex(new Vertex<int>(3, 2));
             myGraf.AddVertex(new Vertex<int>(4, 3));
+            myGraf.AddVertex(new Vertex<int>(5, 3));
+            myGraf.AddVertex(new Vertex<int>(6, 3));
             
 
 
-            myGraf.printVertexes();
+           
 
-            
+
             myGraf.AddEdge(new Edge<int>(myGraf.getVertexById(0), myGraf.getVertexById(4)));
 
             myGraf.AddEdge(new Edge<int>(myGraf.getVertexById(1), myGraf.getVertexById(3)));
 
             Edge<int> myEdge = new Edge<int>(myGraf.getVertexById(0), myGraf.getVertexById(1));
-           
+
+            Console.WriteLine(myGraf.ToString());
+
 
             Console.Write("\nTEST USUWANIE KRAWEDZI \n");
             myGraf.AddEdge(myEdge);

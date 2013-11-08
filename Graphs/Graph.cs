@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 namespace Graphs
 {
 
-    //grafy z krawedziami wazonymi i zwyklymi
-    //grafy na matrixie i liscie
-    //
 
-     
+
+
 
 
     class Vertex<T>
@@ -79,22 +77,17 @@ namespace Graphs
 
     interface IGraph<T>
     {
-         void AddEdge(Edge<T> edge);
+        void AddEdge(Edge<T> edge);
 
-         void RemoveEdge(Edge<T> edge);
+        void RemoveEdge(Edge<T> edge);
 
-         void AddVertex(Vertex<T> vertex);
+        void AddVertex(Vertex<T> vertex);
 
-         void RemoveVertex(Vertex<T> vertex);
-         string printVertexes();
-         Vertex<T> getVertexById(int id);
-         
-         
+        void RemoveVertex(Vertex<T> vertex);
 
-      //  Edge<T> getEdge(Vertex<T> from, Vertex<T> to);
+        Vertex<T> getVertexById(int id);
 
-          
-
+        Edge<T> getEdge(int from, int to);
 
     }
 
@@ -104,7 +97,7 @@ namespace Graphs
     {
 
         List<Vertex<T>> vertexList;
-       // List<Edge<T>> edgeList;
+        
         bool digraf;
         int[,] aMatrix;
         int highestIndex = 0;
@@ -113,18 +106,13 @@ namespace Graphs
         {
             digraf = _digraph;
             vertexList = new List<Vertex<T>>();
-            aMatrix = new int[,]{};
+            aMatrix = new int[,] { };
 
         }
 
         public void AddVertex(Vertex<T> _vertex)
         {
-            //if (_vertex.Id >= highestIndex)
-            //{
-            //    highestIndex = _vertex.Id;
-            //    aMatrix = _resizeArray(aMatrix, highestIndex + 1, highestIndex + 1);
-                
-            //}
+            
 
             vertexList.Add(_vertex);
         }
@@ -149,10 +137,10 @@ namespace Graphs
                 //dodajemy sasiadow dla wierzcholka
 
                 edge.FromVertex.Neighbors.Add(edge.ToVertex);
-               
 
 
-             
+
+
             }
             else
             {
@@ -165,16 +153,16 @@ namespace Graphs
                     aMatrix[to, from] = 1;
                 }
                 else
-                { 
+                {
                     aMatrix[from, to] = 1;
-                    aMatrix[to, from] = 1; 
+                    aMatrix[to, from] = 1;
                 }
 
                 //dodajemy sasiadow dla wierzcholka
 
                 edge.FromVertex.Neighbors.Add(edge.ToVertex);
                 edge.ToVertex.Neighbors.Add(edge.FromVertex);
-               
+
             }
 
         }
@@ -221,38 +209,19 @@ namespace Graphs
 
         }
 
-
-      ////  public Edge<T> getEdge(Vertex<T> from, Vertex<T> to)
-      //  { 
-      //      int fromId 
-      //  }
-
-        public string printVertexes()
+        public Edge<T> getEdge(int from, int to)
         {
-            string tmp="";
-            for (int i = 0; i < highestIndex; i++)
+            if (aMatrix[from, to] == 1)
             {
-                for (int j = 0; j < highestIndex; j++)
-                {
-                    System.Console.Write(aMatrix[i, j]);
-
-                }
-
+                Edge<T> edge = new Edge<T>(getVertexById(from), getVertexById(to));
+                return edge;
             }
-
-
-
-            foreach (var vertex in vertexList)
-            {
-                tmp += vertex.Id;
-            }
-            return tmp;
+            else
+                return null;
         }
 
         public override string ToString()
         {
-            
-
             string grapRep = "";
             grapRep += "\t";
             for (int i = 0; i < aMatrix.GetLength(1); i++)
@@ -267,14 +236,13 @@ namespace Graphs
                 {
 
                     int val = aMatrix[i, j];
-                    grapRep += "\t"+val;
+                    grapRep += "\t" + val;
                 }
                 grapRep += "\n";
             }
 
             return grapRep;
         }
-
 
         protected int[,] _resizeArray(int[,] original, int x, int y)
         {
@@ -287,19 +255,179 @@ namespace Graphs
 
             return newArray;
         }
-        
-
-
-
-
-
-
 
 
     }
+
+
+    class ListGraph<T> : IGraph<T>
+    {
+
+        List<Vertex<T>> vertexList;
+        Dictionary<int, List<Vertex<T>>> aList;
+        bool digraph;
+        int highestIndex;
+
+        public ListGraph(bool _digraph)
+        {
+            digraph = _digraph;
+            aList = new Dictionary<int, List<Vertex<T>>>();
+            vertexList = new List<Vertex<T>>();
+            highestIndex = 0;
+        }
+
+        public void AddEdge(Edge<T> edge)
+        {
+            Vertex<T> from = edge.FromVertex;
+            Vertex<T> to = edge.ToVertex;
+
+            if (Math.Max(from.Id, to.Id) >= highestIndex)
+            {
+                highestIndex = Math.Max(from.Id, to.Id);
+            }
+
+            if (!digraph)
+            {
+                if (aList.ContainsKey(from.Id))
+                {
+                    aList[from.Id].Add(to);
+
+
+                }
+                else
+                {
+                    aList[from.Id] = new List<Vertex<T>>();
+                    aList[from.Id].Add(to);
+
+                }
+
+                //dodaj sasiadow
+                from.Neighbors.Add(to);
+
+            }
+            else
+            {
+                //jesli digraf
+                if (aList.ContainsKey(from.Id) && aList.ContainsKey(to.Id))
+                {
+                    aList[from.Id].Add(to);
+                    aList[to.Id].Add(from);
+                }
+                else if (aList.ContainsKey(from.Id) && !aList.ContainsKey(to.Id))
+                {
+                    aList[to.Id] = new List<Vertex<T>>();
+                    aList[from.Id].Add(to);
+                    aList[to.Id].Add(from);
+                }
+                else if (aList.ContainsKey(to.Id) && !aList.ContainsKey(from.Id))
+                {
+                    aList[from.Id] = new List<Vertex<T>>();
+                    aList[from.Id].Add(to);
+                    aList[to.Id].Add(from);
+                }
+                else if (!aList.ContainsKey(to.Id) && !aList.ContainsKey(from.Id))
+                {
+                    aList[from.Id] = new List<Vertex<T>>();
+                    aList[to.Id] = new List<Vertex<T>>();
+                    aList[from.Id].Add(to);
+                    aList[to.Id].Add(from);
+                }
+
+                //dodaj sasiadow
+                from.Neighbors.Add(to);
+                to.Neighbors.Add(from);
+            }
+
+
+        }
+
+        public void RemoveEdge(Edge<T> edge)
+        {
+            Vertex<T> from = edge.FromVertex;
+            Vertex<T> to = edge.ToVertex;
+
+
+
+
+            if (aList.ContainsKey(from.Id))
+            {
+                if (!digraph)
+                {
+                    aList[from.Id].Remove(to);
+                    from.neighbors.Remove(to);
+                }
+                else
+                {
+                    aList[from.Id].Remove(to);
+                    aList[to.Id].Remove(from);
+                    from.neighbors.Remove(to);
+                    to.neighbors.Remove(from);
+                }
+
+
+            }
+
+
+
+
+
+        }
+
+        public void AddVertex(Vertex<T> vertex)
+        {
+            vertexList.Add(vertex);
+        }
+
+        public void RemoveVertex(Vertex<T> vertex)
+        {
+            vertexList.Remove(vertex);
+        }
+
+        public Vertex<T> getVertexById(int id)
+        {
+            return vertexList.FirstOrDefault(x => x.Id == id);
+        }
+
+        public Edge<T> getEdge(int from, int to)
+        {
+            if (aList.ContainsKey(from) && aList[from].Contains(getVertexById(to)))
+            {
+
+                Edge<T> theEdge = new Edge<T>(getVertexById(from), getVertexById(to));
+                return theEdge;
+
+            }
+            else
+            {
+                throw new Exception("Nie ma takiej krawedzi");
+            }
+        }
+
+        public override string ToString()
+        {
+            string tmp = "";
+            for (int i = 0; i < highestIndex; i++)
+            {
+                tmp += "\t " + i + ": \t";
+                if (aList.ContainsKey(i))
+                {
+                    foreach (var vertex in aList[i])
+                    {
+                        tmp += vertex.Id + ", ";
+                    }
+                    tmp += "\n";
+                }
+                else
+                    tmp += "-\n";
+            }
+            return tmp;
+        }
+    }
+
+
 }
 
-    //class ListGraph<T> : IGraph<T>{}
 
-        
-    //}
+
+
+
