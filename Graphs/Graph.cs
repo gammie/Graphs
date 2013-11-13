@@ -77,6 +77,11 @@ namespace Graphs
 
     interface IGraph<T>
     {
+     
+        List<Vertex<T>> Vertexes {get; }
+
+        List<Edge<T>> Edges { get; }
+
         void AddEdge(Edge<T> edge);
 
         void RemoveEdge(Edge<T> edge);
@@ -97,6 +102,18 @@ namespace Graphs
     {
 
         List<Vertex<T>> vertexList;
+
+
+        public List<Vertex<T>> Vertexes {
+            get { return vertexList; }
+        }
+
+
+        List<Edge<T>> edgesList;
+        public List<Edge<T>> Edges {
+            get { return edgesList; }
+        }
+        
         
         bool digraf;
         int[,] aMatrix;
@@ -104,8 +121,10 @@ namespace Graphs
 
         public MatrixGraph(bool _digraph)
         {
+            
             digraf = _digraph;
             vertexList = new List<Vertex<T>>();
+            edgesList = new List<Edge<T>>();
             aMatrix = new int[,] { };
 
         }
@@ -131,11 +150,12 @@ namespace Graphs
 
                     aMatrix = _resizeArray(aMatrix, highestIndex + 1, highestIndex + 1);
                     aMatrix[from, to] = 1;
+                    
                 }
                 else { aMatrix[from, to] = 1; }
 
                 //dodajemy sasiadow dla wierzcholka
-
+                edgesList.Add(new Edge<T>(edge.FromVertex, edge.ToVertex));
                 edge.FromVertex.Neighbors.Add(edge.ToVertex);
 
 
@@ -159,6 +179,8 @@ namespace Graphs
                 }
 
                 //dodajemy sasiadow dla wierzcholka
+                edgesList.Add(new Edge<T>(edge.FromVertex, edge.ToVertex));
+                edgesList.Add(new Edge<T>(edge.ToVertex, edge.FromVertex));
 
                 edge.FromVertex.Neighbors.Add(edge.ToVertex);
                 edge.ToVertex.Neighbors.Add(edge.FromVertex);
@@ -264,6 +286,19 @@ namespace Graphs
     {
 
         List<Vertex<T>> vertexList;
+        public List<Vertex<T>> Vertexes
+        {
+            get { return vertexList; }
+
+        }
+
+        List<Edge<T>> edgesList;
+        public List<Edge<T>> Edges
+        {
+            get { return edgesList; }
+        }
+
+
         Dictionary<int, List<Vertex<T>>> aList;
         bool digraph;
         int highestIndex;
@@ -291,6 +326,7 @@ namespace Graphs
                 if (aList.ContainsKey(from.Id))
                 {
                     aList[from.Id].Add(to);
+                    edgesList.Add(new Edge<T>(from, to));
 
 
                 }
@@ -298,6 +334,8 @@ namespace Graphs
                 {
                     aList[from.Id] = new List<Vertex<T>>();
                     aList[from.Id].Add(to);
+                    edgesList.Add(new Edge<T>(from, to));
+                    edgesList.Add(new Edge<T>(to, from));
 
                 }
 
